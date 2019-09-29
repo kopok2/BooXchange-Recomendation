@@ -1,6 +1,8 @@
 # coding=utf-8
 """Collaborative filtering engine for BooXchange E-commerce platform."""
 
+import sys
+from random import randrange
 from operator import itemgetter
 from neighbour_selector import k_ranking
 
@@ -81,7 +83,7 @@ def get_recommendations(user, k, n):
         recomm = [[key, value] for key, value in voting.items()]
         recomm.sort(key=itemgetter(1), reverse=True)
 
-        return [x[0] for x in recomm[:n]]
+        return [x[0] for x in recomm] + [randrange(10, 100) for y in range(max(0, 4 - len(recomm)))]
     except KeyError:
         return []
 
@@ -101,5 +103,6 @@ def server_response(response):
 if __name__ == '__main__':
     k = 10
     n = 4
-    print(server_response(get_recommendations(54, k, n)))
+    user = int(sys.argv[1])
+    print(server_response(get_recommendations(user, k, n)))
 
