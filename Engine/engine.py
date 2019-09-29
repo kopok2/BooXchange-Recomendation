@@ -1,6 +1,7 @@
 # coding=utf-8
 """Collaborative filtering engine for BooXchange E-commerce platform."""
 
+from operator import itemgetter
 from neighbour_selector import k_ranking
 
 
@@ -38,7 +39,41 @@ def ranking(user, user_list, k):
     return ids
 
 
-if __name__ == '__main__':
-    X = load_data()
-    print(ranking(54, X, 3))
+def get_recommendations(user, k, n):
+    """Get recommendations for user with given user id.
 
+    Args:
+        user: user id.
+        k: number of nearest neighbours.
+        n: number of suggested products.
+
+    Returns:
+        list of book id's with highest ranking.
+    """
+    # create user ranking
+    x_data = load_data()
+    ranks = ranking(user, x_data, k)
+
+    # vote for recommendations
+    voting = {}
+    for voter in ranks:
+        vote_power = 1 / (1 + voter[1])
+        for book in list(x_data[voter[0]]):
+            if book in voting:
+                voting[book] += vote_power
+            else:
+                voting[book] = vote_power
+
+    # filter out already ordered products
+    for included in list(x_data[user]):
+        del voting[included]
+
+    # get n recommendations
+    recomm = [[key, value] for key, value in voting.items()]
+    recomm.sort(key=itemgetter(1), reverse=True)
+
+    return [x[0] for x in recomm[:n]]
+
+
+if __name__ == '__main__':
+    print(get_recommendations(54, 10, 4))
