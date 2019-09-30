@@ -1,0 +1,19 @@
+LICENSE INFORMATION
+
+Dahakian API - software, code sources and other files placed in containing directory ('dahakianapi/').
+
+User - natural person, legal person or other entity that uses Dahakian API to develop and distribute derivate software products.
+
+Derivate software product - software product that includes Dahakian API or its parts.
+
+End-user - natural person, legal person or other entity that uses derivate software product.
+
+
+User is granted permission to create and distribute derivate software products with Dahakian API, provided he/she/it has permission to use Dahakian IDE (i.e. subscription or direct permission from Dahakian IDE provider).
+
+This permission does not apply to:
+    -creation of desktop applications frameworks
+
+User may not redistribute Dahakian API or its parts as a standalone product. User may include Dahakian API sources in a derivate product.
+
+End-user is granted permission to use Dahakian API or its parts in derivate product, provided above-mentioned conditions are fulfilled.

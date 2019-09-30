@@ -1,0 +1,7 @@
+{
+"mainform" : { 	
+					"form_name" : "mainform",
+					"form_caption" : "New app",
+					"form_html_url" : "mainform.html"
+				}
+}
