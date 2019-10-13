@@ -2,68 +2,35 @@ function draw_neural(neural)
 {
     var c = document.getElementById("neural");
     var ctx = c.getContext("2d");
-    var size = 12;
-    var distanceX = 120;
-    var distanceY = 40;
-    
-    ctx.lineWidth = 1;
-    ctx.canvas.width  = neural.last_neurons.length*(size + distanceX);
-    biggest_count = 0;
-    neural.last_neurons.forEach(function(entry) {
-        if(entry.length>biggest_count){biggest_count = entry.length;}
-    });
-    ctx.canvas.height  = biggest_count*(size + distanceY);
+
+    ctx.lineWidth = 3;
+    ctx.canvas.width  = 1800;
+    ctx.canvas.height  = 1080;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     console.log(neural);
-    
-    var x = 0;
-    neural.weights.forEach(
-        function(layer){
-        y=0;
-            layer.forEach(function(neuron){
-            z=0;
-                neuron.forEach(function(connection){
-                    //console.log(x);
-                    //console.log(y);
-                    //console.log(z);
-                    //console.log(connection);
-                    rgb = Math.round(255*connection);
-                    if(connection>0)
-                    {
-                    ctx.strokeStyle = "rgb("+0+","+200+","+rgb+")";}
-                    else{
-                        rgb = -rgb;
-                        ctx.strokeStyle = "rgb("+rgb+","+100+","+0+")";
-                    }
-                    ctx.beginPath();
-                    halfsize = Math.round(size/2);
-                    ctx.moveTo(x*(size+distanceX)+halfsize,y*(size+distanceY)+halfsize);
-                    ctx.lineTo((x+1)*(size+distanceX)+halfsize,z*(size+distanceY)+halfsize);
-                    ctx.stroke(); 
-                    z++;
-                });
-            y++;
-            });
-        x++;
+    size = 4;
+
+    // Plot graph edges
+    neural.edges.forEach(
+        function(edge){
+            rgb = Math.round(255*edge.link);
+            ctx.strokeStyle = "rgb("+rgb+","+rgb+","+rgb+")";
+            ctx.beginPath();
+            ctx.moveTo(edge.from.point[0], edge.from.point[1]);
+            ctx.lineTo(edge.to.point[0], edge.to.point[1]);
+            ctx.stroke();
         }
-        );
-    x=0;
-    neural.last_neurons.forEach(function(entry) {
-        var y = 0;
-        entry.forEach(function(neuron) {
-            console.log(neuron[0]);
-            var rgb = Math.round(255*neuron[0]);
+    );
+
+    // Plot graph points
+    neural.points.forEach(
+        function(point){
             ctx.strokeStyle = 'white';
+            var rgb = 50;
             ctx.fillStyle = "rgb("+rgb+","+rgb+","+rgb+")";
-            ctx.fillRect(x*(size+distanceX),y*(size+distanceY),size,size);
-            ctx.strokeRect(x*(size+distanceX),y*(size+distanceY),size,size);
-            ctx.strokeText(Math.round(neuron[0] * 100) / 100,x*(size+distanceX)+size,y*(size+distanceY)+size);
-            y++;
-        });
-        x++;
-    });
-    
-    
-    //ctx.fillRect();
+            ctx.fillRect(point.point[0], point.point[1],size,size);
+            ctx.strokeRect(point.point[0], point.point[1],size,size);
+            ctx.strokeText(point.id, point.point[0] + size, point.point[1] + size);
+        }
+    );
 }
-//setInterval(function(){ load_neural(); }, 100);

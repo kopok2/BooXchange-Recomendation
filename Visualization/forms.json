@@ -1,7 +1,7 @@
 {
 "mainform" : { 	
 					"form_name" : "mainform",
-					"form_caption" : "New app",
+					"form_caption" : "BooXchange Recommendation visualization",
 					"form_html_url" : "mainform.html"
 				}
 }
