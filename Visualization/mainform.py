@@ -7,6 +7,7 @@ import csv
 import math
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 from engine import load_data, ranking, get_recommendations
 from dahakianapi.forms import Form
 from dahakianapi.singleton import Singleton
@@ -27,9 +28,16 @@ def load_book_names():
 
 @Singleton
 class mainform(Form):
+    def expand_data(self, perc):
+        open("expand.csv", "w").write("\n".join(open("sell_data.csv").readlines()[:perc]))
+        self.load_graph(0, 0)
+
     def load_graph(self, cordx, cordy):
+        self.enter_fullscreen()
+
+        # load data
         k = 10
-        X = load_data("buy_data.csv")
+        X = load_data("expand.csv")
         users = []
         user_ids = []
         for key, val in X.items():
@@ -39,8 +47,13 @@ class mainform(Form):
                 user[x] = 1
             users.append(user)
         sparse_users = np.array(users)
+
+        # dimensionality reduction using scikit-learn
         pca = PCA(n_components=2)
         graph_users = pca.fit_transform(sparse_users)
+        clusters = KMeans(n_clusters=7, random_state=0).fit_predict(graph_users)
+
+        # ...
         user_points = []
         edges = []
 
@@ -53,7 +66,7 @@ class mainform(Form):
 
 
         for x in range(len(user_ids)):
-            user_points.append({'id': user_ids[x], 'point': graph_users[x, :].tolist()})
+            user_points.append({'id': user_ids[x], 'point': graph_users[x, :].tolist(), 'cluster': clusters.tolist()[x]})
 
         # preparing points for visualization
         mnx, mny = 1000, 1000
@@ -93,7 +106,7 @@ class mainform(Form):
                 for book in list(X[user_ids[x]]):
                     if book not in used:
                         used.add(book)
-                        user_points.append({'id': books_names[str(book)], 'point': [vis_x_size + margin, int((book / lib_size) * vis_y_size)]})
+                        user_points.append({'id': books_names[str(book)], 'point': [vis_x_size + margin, int((book / lib_size) * vis_y_size)], 'cluster': 0})
                     edges.append({'from': user_points[x],
                                   'to': {'id': book, 'point': [vis_x_size + margin, int((book / lib_size) * vis_y_size)]},
                                   'link': 0.5})
@@ -106,6 +119,7 @@ class mainform(Form):
                               'to': user_points[user_ids.index(voter[0])],
                               'link': vote_power})
 
+        # call js visualization code
         graph = {'points': user_points, 'edges': edges}
         draw_neural(graph)
         print(cordx, cordy)

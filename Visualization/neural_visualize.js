@@ -8,7 +8,7 @@ function draw_neural(neural)
     ctx.canvas.height  = 1080;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     console.log(neural);
-    size = 4;
+    size = 12;
 
     // Plot graph edges
     neural.edges.forEach(
@@ -26,17 +26,26 @@ function draw_neural(neural)
     neural.points.forEach(
         function(point){
             ctx.strokeStyle = 'white';
-            var rgb = 50;
-            ctx.fillStyle = "rgb("+rgb+","+rgb+","+rgb+")";
+            ctx.fillStyle = colors[point.cluster - 1];
             ctx.fillRect(point.point[0], point.point[1],size,size);
             ctx.strokeRect(point.point[0], point.point[1],size,size);
             ctx.strokeText(point.id, point.point[0] + size, point.point[1] + size);
         }
     );
 }
-
+var colors = ['red', 'green', 'blue', 'orange', 'yellow', 'purple', 'fuchsia'];
 function load_move(e) {
   var x = e.clientX;
   var y = e.clientY;
   load_graph(x - 50, y - 50);
 }
+
+var perc = 0;
+
+function expand(){
+    perc++;
+    if(perc < 600){
+        expand_data(perc);
+    }
+}
+setInterval(expand, 100);

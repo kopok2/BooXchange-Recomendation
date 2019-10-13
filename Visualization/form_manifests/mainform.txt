@@ -7,6 +7,7 @@ close_form
 dialog_box
 dir_dialog
 enter_fullscreen
+expand_data
 file_open_dialog
 file_save_dialog
 hide
