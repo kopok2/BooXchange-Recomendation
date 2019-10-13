@@ -3,6 +3,8 @@
 Define form methods to add behavior.
 """
 
+import csv
+import math
 import numpy as np
 from sklearn.decomposition import PCA
 from engine import load_data, ranking, get_recommendations
@@ -10,10 +12,22 @@ from dahakianapi.forms import Form
 from dahakianapi.singleton import Singleton
 
 
+def load_book_names():
+    reader = csv.reader(open('names.csv', 'r', encoding="utf8"))
+    d = {}
+    for row in reader:
+        k, v = row
+        d[k] = v
+    # fill unknown books
+    for x in range(500):
+        if str(x) not in d:
+            d[str(x)] = "Book moved"
+    return d
+
 
 @Singleton
 class mainform(Form):
-    def load_graph(self):
+    def load_graph(self, cordx, cordy):
         k = 10
         X = load_data("buy_data.csv")
         users = []
@@ -30,9 +44,13 @@ class mainform(Form):
         user_points = []
         edges = []
 
-        vis_x_size = 1700
-        vis_y_size = 980
+        vis_x_size = 1500
+        vis_y_size = 900
+        margin = 50
+        selection_margin = 60
+
         lib_size = 500
+
 
         for x in range(len(user_ids)):
             user_points.append({'id': user_ids[x], 'point': graph_users[x, :].tolist()})
@@ -45,24 +63,40 @@ class mainform(Form):
             mny = min(mny, u['point'][1])
             mxx = max(mxx, u['point'][0])
             mxy = max(mxy, u['point'][1])
-        print(mnx, mxx, mny, mxy)
 
         # normalizing points for visualization
-
-        margin = 50
         dist_x = mxx - mnx
         dist_y = mxy - mny
         for u in user_points:
             u['point'][0] = int(((u['point'][0] - mnx) / dist_x) * vis_x_size) + margin
             u['point'][1] = int(((u['point'][1] - mny) / dist_y) * vis_y_size) + margin
 
-        """
+        # choosing selected user
+        mn_dist = selection_margin
+        chosen_user = 0
+        for point in user_points:
+            dist = math.sqrt((point['point'][0] - cordx) ** 2 + (point['point'][1] - cordy) ** 2)
+            if dist < mn_dist:
+                mn_dist = dist
+                chosen_user = point['id']
+
+        # plotting selected user basket
+        if chosen_user:
+            neighbours = [n[0] for n in ranking(chosen_user, X, k)] + [chosen_user]
+        else:
+            neighbours = []
+
+        books_names = load_book_names()
+        used = set()
         for x in range(len(user_ids)):
-            for book in list(X[user_ids[x]]):
-                edges.append({'from': user_points[x],
-                              'to': {'id': book, 'point': [int((book / lib_size) * vis_x_size), vis_y_size]},
-                              'link': 1.0})
-                print(edges[-1])"""
+            if user_ids[x] in neighbours:
+                for book in list(X[user_ids[x]]):
+                    if book not in used:
+                        used.add(book)
+                        user_points.append({'id': books_names[str(book)], 'point': [vis_x_size + margin, int((book / lib_size) * vis_y_size)]})
+                    edges.append({'from': user_points[x],
+                                  'to': {'id': book, 'point': [vis_x_size + margin, int((book / lib_size) * vis_y_size)]},
+                                  'link': 0.5})
 
         for x in range(len(user_ids)):
             ranks = ranking(user_ids[x], X, k)
@@ -74,6 +108,7 @@ class mainform(Form):
 
         graph = {'points': user_points, 'edges': edges}
         draw_neural(graph)
+        print(cordx, cordy)
 
 
 if __name__ == '__main__':

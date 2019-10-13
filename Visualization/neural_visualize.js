@@ -13,7 +13,7 @@ function draw_neural(neural)
     // Plot graph edges
     neural.edges.forEach(
         function(edge){
-            rgb = Math.round(255*edge.link);
+            rgb = Math.round(255*(edge.link+ 0.25));
             ctx.strokeStyle = "rgb("+rgb+","+rgb+","+rgb+")";
             ctx.beginPath();
             ctx.moveTo(edge.from.point[0], edge.from.point[1]);
@@ -33,4 +33,10 @@ function draw_neural(neural)
             ctx.strokeText(point.id, point.point[0] + size, point.point[1] + size);
         }
     );
+}
+
+function load_move(e) {
+  var x = e.clientX;
+  var y = e.clientY;
+  load_graph(x - 50, y - 50);
 }

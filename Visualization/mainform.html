@@ -8,7 +8,7 @@
     <script src="neural_visualize.js"></script>
 </head>
 <body style="background: black; padding: 50px;">
-    <button onclick="load_graph()">Load neural</button>
-	<canvas id="neural" width="1800" height="1000"></canvas>
+    <button onclick="load_graph(0, 0)">Load neural</button>
+	<canvas id="neural" width="1800" height="1000" onmousemove="load_move(event)"></canvas>
 </body>
 </html> 
