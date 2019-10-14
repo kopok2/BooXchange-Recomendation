@@ -29,7 +29,7 @@ def load_book_names():
 @Singleton
 class mainform(Form):
     def expand_data(self, perc):
-        open("expand.csv", "w").write("\n".join(open("sell_data.csv").readlines()[:perc]))
+        open("expand.csv", "w").write("\n".join(open("buy_data.csv").readlines()[:perc]))
         self.load_graph(0, 0)
 
     def load_graph(self, cordx, cordy):
